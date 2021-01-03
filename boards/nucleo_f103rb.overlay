@@ -1,0 +1,36 @@
+/{
+	
+
+	diody {
+		compatible = "gpio-leds";
+		green_led_3: led_2 {
+			gpios = <&gpioa 6 GPIO_ACTIVE_HIGH>;
+			label = "User LD2";
+		};
+	};
+
+	przyciski {
+		compatible = "gpio-keys";
+		user_button3: button2 {
+			label = "User";
+			gpios = <&gpioc 12 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	aliases {
+		led1 = &green_led_3;
+		sw1 = &user_button3;
+	};
+};
+
+&i2c1  {
+	status = "okay";
+};
+
+&i2c1 {
+	si7006@40 {
+		compatible = "silabs,si7006";
+		label = "SI7006";
+		reg = <0x40>;
+	};
+};
