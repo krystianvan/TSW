@@ -21,6 +21,7 @@
 int a=1;
 int a2=1;
 int a3=1;
+int number_of_letter=0;
 /*
  * Get button configuration from the devicetree sw0 alias.
  *
@@ -28,7 +29,7 @@ int a3=1;
  * cell is optional.
  */
 
- // SW1
+ // SW0
 
 #define SW0_NODE	DT_ALIAS(sw0)
 
@@ -43,7 +44,7 @@ int a3=1;
 #define SW0_GPIO_FLAGS	0
 #endif
 
-//SW2
+//SW1
 #define SW1_NODE	DT_ALIAS(sw1)
 
 #if DT_NODE_HAS_STATUS(SW1_NODE, okay)
@@ -57,7 +58,7 @@ int a3=1;
 #define SW1_GPIO_FLAGS	0
 #endif
 
-//SW3
+//SW2
 #define SW2_NODE	DT_ALIAS(sw2)
 
 #if DT_NODE_HAS_STATUS(SW2_NODE, okay)
@@ -69,6 +70,34 @@ int a3=1;
 #define SW2_GPIO_LABEL	""
 #define SW2_GPIO_PIN	0
 #define SW2_GPIO_FLAGS	0
+#endif
+
+//SW3
+#define SW3_NODE	DT_ALIAS(sw3)
+
+#if DT_NODE_HAS_STATUS(SW3_NODE, okay)
+#define SW3_GPIO_LABEL	DT_GPIO_LABEL(SW3_NODE, gpios)
+#define SW3_GPIO_PIN	DT_GPIO_PIN(SW3_NODE, gpios)
+#define SW3_GPIO_FLAGS	(GPIO_INPUT | DT_GPIO_FLAGS(SW3_NODE, gpios))
+#else
+#error "Unsupported board: SW3 devicetree alias is not defined"
+#define SW3_GPIO_LABEL	""
+#define SW3_GPIO_PIN	0
+#define SW3_GPIO_FLAGS	0
+#endif
+
+//SW4
+#define SW4_NODE	DT_ALIAS(sw4)
+
+#if DT_NODE_HAS_STATUS(SW4_NODE, okay)
+#define SW4_GPIO_LABEL	DT_GPIO_LABEL(SW4_NODE, gpios)
+#define SW4_GPIO_PIN	DT_GPIO_PIN(SW4_NODE, gpios)
+#define SW4_GPIO_FLAGS	(GPIO_INPUT | DT_GPIO_FLAGS(SW4_NODE, gpios))
+#else
+#error "Unsupported board: SW4 devicetree alias is not defined"
+#define SW4_GPIO_LABEL	""
+#define SW4_GPIO_PIN	0
+#define SW4_GPIO_FLAGS	0
 #endif
 
 /* LED helpers, which use the led0 devicetree alias if it's available. LED0*/
@@ -89,6 +118,8 @@ static void match_led_to_button3(const struct device *button,
 static struct gpio_callback button_cb_data;
 static struct gpio_callback button2_cb_data;
 static struct gpio_callback button3_cb_data;
+static struct gpio_callback button4_cb_data;
+static struct gpio_callback button5_cb_data;
 
 
 void button_pressed(const struct device *dev, struct gpio_callback *cb,
@@ -108,10 +139,23 @@ void button_pressed3(const struct device *dev, struct gpio_callback *cb,
 {
 	printk("Button3 released at %" PRIu32 "\n", k_cycle_get_32());
 }
+void button_pressed4(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	number_of_letter=number_of_letter+1;
+	printk("Number of letter: %d \n",number_of_letter);
+}
+
+void button_pressed5(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	number_of_letter=0;
+	printk("Your take all letter from mailbox. Number of letter: %d \n",number_of_letter);
+}
 
 void main(void)
 {
-	const struct device *button, *button2, *button3;
+	const struct device *button, *button2, *button3, *button4, *button5;
 	const struct device *led, *led2, *led3;
 	// Nie dziala struct device *dev;
 	int ret;
@@ -168,6 +212,21 @@ void main(void)
 		printk("Error: didn't find %s device\n", SW2_GPIO_LABEL);
 		return;
 	}
+
+	//Binding button to SW3
+	button4 = device_get_binding(SW3_GPIO_LABEL);
+	if (button4 == NULL) {
+		printk("Error: didn't find %s device\n", SW3_GPIO_LABEL);
+		return;
+	}
+
+	//Binding button to SW4
+	button5 = device_get_binding(SW4_GPIO_LABEL);
+	if (button5 == NULL) {
+		printk("Error: didn't find %s device\n", SW4_GPIO_LABEL);
+		return;
+	}
+
 	//gpio pin configure
 	ret = gpio_pin_configure(button, SW0_GPIO_PIN, SW0_GPIO_FLAGS);
 	if (ret != 0) {
@@ -187,6 +246,20 @@ void main(void)
 	if (ret != 0) {
 		printk("Error %d: failed to configure %s pin %d\n",
 		       ret, SW2_GPIO_LABEL, SW2_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_configure(button, SW3_GPIO_PIN, SW3_GPIO_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, SW3_GPIO_LABEL, SW3_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_configure(button, SW4_GPIO_PIN, SW4_GPIO_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, SW4_GPIO_LABEL, SW4_GPIO_PIN);
 		return;
 	}
 	//interrupt configure
@@ -216,18 +289,45 @@ void main(void)
 			ret, SW2_GPIO_LABEL, SW2_GPIO_PIN);
 		return;
 	}
+
+	ret = gpio_pin_interrupt_configure(button,
+					   SW3_GPIO_PIN,
+					   GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, SW3_GPIO_LABEL, SW3_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_interrupt_configure(button,
+					   SW4_GPIO_PIN,
+					   GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, SW4_GPIO_LABEL, SW4_GPIO_PIN);
+		return;
+	}
 	//Set up button
 	gpio_init_callback(&button_cb_data, button_pressed, BIT(SW0_GPIO_PIN));
 	gpio_add_callback(button, &button_cb_data);
-	printk("Set up button at %s pin %d\n", SW0_GPIO_LABEL, SW0_GPIO_PIN);
+	printk("Set up button at %s pin %d (PRESS - SMOKE ALARM ACTIVE, RELEASE - SMOKE ALARM DESACTTIVE)\n", SW0_GPIO_LABEL, SW0_GPIO_PIN);
 
 	gpio_init_callback(&button2_cb_data, button_pressed2, BIT(SW1_GPIO_PIN));
 	gpio_add_callback(button2, &button2_cb_data);
-	printk("Set up button at %s pin %d\n", SW1_GPIO_LABEL, SW1_GPIO_PIN);
+	printk("Set up button at %s pin %d (PRESS - BURGLAR ALARM ACTIVE, RELEASE - BULGLAR ALARM DESACTTIVE)\n", SW1_GPIO_LABEL, SW1_GPIO_PIN);
 
 	gpio_init_callback(&button3_cb_data, button_pressed3, BIT(SW2_GPIO_PIN));
 	gpio_add_callback(button3, &button3_cb_data);
-	printk("Set up button at %s pin %d\n", SW2_GPIO_LABEL, SW2_GPIO_PIN);
+	printk("Set up button at %s pin %d (PRESS - BATHROOM LIGHT ACTIVE, RELEASE - BATHROOM LIGHT DESACTTIVE)\n", SW2_GPIO_LABEL, SW2_GPIO_PIN);
+
+	gpio_init_callback(&button4_cb_data, button_pressed4, BIT(SW3_GPIO_PIN));
+	gpio_add_callback(button4, &button4_cb_data);
+	printk("Set up button at %s pin %d (If you change from release to press, the number of letters will increment.)\n", SW3_GPIO_LABEL, SW3_GPIO_PIN);
+
+	gpio_init_callback(&button5_cb_data, button_pressed5, BIT(SW4_GPIO_PIN));
+	gpio_add_callback(button5, &button5_cb_data);
+	printk("Set up button at %s pin %d (If you change from release to press, the mailbox will be empty.)\n", SW4_GPIO_LABEL, SW4_GPIO_PIN);
+
 
 	//Led initialize
 	led = initialize_led();

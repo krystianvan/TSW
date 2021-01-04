@@ -16,12 +16,20 @@
 	przyciski {
 		compatible = "gpio-keys";
 		user_button3: button2 {
-			label = "User";
+			label = "User B2";
 			gpios = <&gpioc 12 GPIO_ACTIVE_LOW>;
 		};
 		user_button4: button3 {
 			label = "User B3";
 			gpios = <&gpioc 11 GPIO_ACTIVE_LOW>;
+		};
+		user_button5: button4 {
+			label = "User B4";
+			gpios = <&gpioc 10 GPIO_ACTIVE_HIGH>;
+		};
+		user_button6: button5 {
+			label = "User B4";
+			gpios = <&gpioc 9 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -30,6 +38,8 @@
 		led2 = &green_led_4;
 		sw1 = &user_button3;
 		sw2 = &user_button4;
+		sw3 = &user_button5;
+		sw4 = &user_button6;
 	};
 };
 
