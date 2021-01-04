@@ -18,7 +18,8 @@
 
 
 #define SLEEP_TIME_MS	1
-
+int a=1;
+int a2=1;
 /*
  * Get button configuration from the devicetree sw0 alias.
  *
@@ -201,18 +202,18 @@ static const struct device *initialize_led(void)
 
 	led = device_get_binding(LED0_GPIO_LABEL);
 	if (led == NULL) {
-		printk("Didn't find LED device %s\n", LED0_GPIO_LABEL);
+		printk("Didn't find SMOKE ALARM device %s\n", LED0_GPIO_LABEL);
 		return NULL;
 	}
 
 	ret = gpio_pin_configure(led, LED0_GPIO_PIN, LED0_GPIO_FLAGS);
 	if (ret != 0) {
-		printk("Error %d: failed to configure LED device %s pin %d\n",
+		printk("Error %d: failed to configure SMOKE ALARM device %s pin %d\n",
 		       ret, LED0_GPIO_LABEL, LED0_GPIO_PIN);
 		return NULL;
 	}
 
-	printk("Set up LED at %s pin %d\n", LED0_GPIO_LABEL, LED0_GPIO_PIN);
+	printk("Set up SMOKE ALARM at %s pin %d\n", LED0_GPIO_LABEL, LED0_GPIO_PIN);
 
 	return led;
 }
@@ -221,9 +222,26 @@ static void match_led_to_button(const struct device *button,
 				const struct device *led)
 {
 	bool val;
-
+	
 	val = gpio_pin_get(button, SW0_GPIO_PIN);
 	gpio_pin_set(led, LED0_GPIO_PIN, !val);
+
+	if(val == 0)
+	{	
+		
+		if(a==0){
+			printk("SMOKE ALARM ACTIVE\n");
+			a=a+1;
+		}
+	}
+	if(val == 1)
+	{	
+		
+		if(a==1){
+			printk("SMOKE ALARM DESACTIVE\n");
+			a=a-1;
+		}
+	}
 }
 
 #else  /* !defined(LED0_GPIO_LABEL) */
@@ -272,7 +290,7 @@ static const struct device *initialize_led2(void)
 		return NULL;
 	}
 
-	printk("Set up LED at %s pin %d\n", LED1_GPIO_LABEL, LED1_GPIO_PIN);
+	printk("Set up Burglar Alarm at %s pin %d\n", LED1_GPIO_LABEL, LED1_GPIO_PIN);
 
 	return led;
 }
@@ -283,7 +301,23 @@ static void match_led_to_button2(const struct device *button,
 	bool val;
 
 	val = gpio_pin_get(button, SW1_GPIO_PIN);
-	gpio_pin_set(led, LED1_GPIO_PIN, val);
+	gpio_pin_set(led, LED1_GPIO_PIN, !val);
+	if(val == 0)
+	{	
+		
+		if(a2==0){
+			printk("BURGLAR ALARM ACTIVE\n");
+			a2=a2+1;
+		}
+	}
+	if(val == 1)
+	{	
+		
+		if(a2==1){
+			printk("BURGLAR ALARM DESACTIVE\n");
+			a2=a2-1;
+		}
+	}
 }
 
 #else  /* !defined(LED1_GPIO_LABEL) */
