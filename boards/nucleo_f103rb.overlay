@@ -7,6 +7,10 @@
 			gpios = <&gpioa 6 GPIO_ACTIVE_HIGH>;
 			label = "User LD2";
 		};
+		green_led_4: led_3 {
+			gpios = <&gpioa 7 GPIO_ACTIVE_HIGH>;
+			label = "User LD3";
+		};
 	};
 
 	przyciski {
@@ -15,11 +19,17 @@
 			label = "User";
 			gpios = <&gpioc 12 GPIO_ACTIVE_LOW>;
 		};
+		user_button4: button3 {
+			label = "User B3";
+			gpios = <&gpioc 11 GPIO_ACTIVE_LOW>;
+		};
 	};
 
 	aliases {
 		led1 = &green_led_3;
+		led2 = &green_led_4;
 		sw1 = &user_button3;
+		sw2 = &user_button4;
 	};
 };
 
