@@ -100,6 +100,61 @@ int number_of_letter=0;
 #define SW4_GPIO_FLAGS	0
 #endif
 
+//SW5
+#define SW5_NODE	DT_ALIAS(sw5)
+
+#if DT_NODE_HAS_STATUS(SW5_NODE, okay)
+#define SW5_GPIO_LABEL	DT_GPIO_LABEL(SW5_NODE, gpios)
+#define SW5_GPIO_PIN	DT_GPIO_PIN(SW5_NODE, gpios)
+#define SW5_GPIO_FLAGS	(GPIO_INPUT | DT_GPIO_FLAGS(SW5_NODE, gpios))
+#else
+#error "Unsupported board: SW5 devicetree alias is not defined"
+#define SW5_GPIO_LABEL	""
+#define SW5_GPIO_PIN	0
+#define SW5_GPIO_FLAGS	0
+#endif
+
+//SW6
+#define SW6_NODE	DT_ALIAS(sw6)
+
+#if DT_NODE_HAS_STATUS(SW6_NODE, okay)
+#define SW6_GPIO_LABEL	DT_GPIO_LABEL(SW6_NODE, gpios)
+#define SW6_GPIO_PIN	DT_GPIO_PIN(SW6_NODE, gpios)
+#define SW6_GPIO_FLAGS	(GPIO_INPUT | DT_GPIO_FLAGS(SW6_NODE, gpios))
+#else
+#error "Unsupported board: SW6 devicetree alias is not defined"
+#define SW6_GPIO_LABEL	""
+#define SW6_GPIO_PIN	0
+#define SW6_GPIO_FLAGS	0
+#endif
+
+//SW7
+#define SW7_NODE	DT_ALIAS(sw7)
+
+#if DT_NODE_HAS_STATUS(SW7_NODE, okay)
+#define SW7_GPIO_LABEL	DT_GPIO_LABEL(SW7_NODE, gpios)
+#define SW7_GPIO_PIN	DT_GPIO_PIN(SW7_NODE, gpios)
+#define SW7_GPIO_FLAGS	(GPIO_INPUT | DT_GPIO_FLAGS(SW7_NODE, gpios))
+#else
+#error "Unsupported board: SW7 devicetree alias is not defined"
+#define SW7_GPIO_LABEL	""
+#define SW7_GPIO_PIN	0
+#define SW7_GPIO_FLAGS	0
+#endif
+
+//SW8
+#define SW8_NODE	DT_ALIAS(sw8)
+
+#if DT_NODE_HAS_STATUS(SW8_NODE, okay)
+#define SW8_GPIO_LABEL	DT_GPIO_LABEL(SW8_NODE, gpios)
+#define SW8_GPIO_PIN	DT_GPIO_PIN(SW8_NODE, gpios)
+#define SW8_GPIO_FLAGS	(GPIO_INPUT | DT_GPIO_FLAGS(SW8_NODE, gpios))
+#else
+#error "Unsupported board: SW8 devicetree alias is not defined"
+#define SW8_GPIO_LABEL	""
+#define SW8_GPIO_PIN	0
+#define SW8_GPIO_FLAGS	0
+#endif
 /* LED helpers, which use the led0 devicetree alias if it's available. LED0*/
 static const struct device *initialize_led(void);
 static void match_led_to_button(const struct device *button,
@@ -114,13 +169,23 @@ static void match_led_to_button2(const struct device *button,
 static const struct device *initialize_led3(void);
 static void match_led_to_button3(const struct device *button,
 				const struct device *led);
+/* LED 3 LED 4*/
+static const struct device *initialize_led4(void);
+static void match_led_to_button678(const struct device *button, const struct device *button1, const struct device *button2,
+				const struct device *led);
+static const struct device *initialize_led5(void);
+static void match_led_to_button679(const struct device *button, const struct device *button1, const struct device *button2,
+				const struct device *led);
 
 static struct gpio_callback button_cb_data;
 static struct gpio_callback button2_cb_data;
 static struct gpio_callback button3_cb_data;
 static struct gpio_callback button4_cb_data;
 static struct gpio_callback button5_cb_data;
-
+static struct gpio_callback button6_cb_data;
+static struct gpio_callback button7_cb_data;
+static struct gpio_callback button8_cb_data;
+static struct gpio_callback button9_cb_data;
 
 void button_pressed(const struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
@@ -153,10 +218,35 @@ void button_pressed5(const struct device *dev, struct gpio_callback *cb,
 	printk("Your take all letter from mailbox. Number of letter: %d \n",number_of_letter);
 }
 
+void button_pressed6(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	printk("The switch to open the roller shutter pushed.\n");
+}
+
+void button_pressed7(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	printk("The switch to close the roller shutter pushed.\n");
+}
+
+void button_pressed8(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	printk("The blind is opened\n");
+}
+
+void button_pressed9(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	printk("The blind is closed.\n");
+}
+
+
 void main(void)
 {
-	const struct device *button, *button2, *button3, *button4, *button5;
-	const struct device *led, *led2, *led3;
+	const struct device *button, *button2, *button3, *button4, *button5, *button6, *button7, *button8, *button9;
+	const struct device *led, *led2, *led3, *led4, *led5;
 	// Nie dziala struct device *dev;
 	int ret;
 
@@ -227,6 +317,34 @@ void main(void)
 		return;
 	}
 
+	//Binding button to SW5
+	button6 = device_get_binding(SW5_GPIO_LABEL);
+	if (button6 == NULL) {
+		printk("Error: didn't find %s device\n", SW5_GPIO_LABEL);
+		return;
+	}
+
+	//Binding button to SW6
+	button7 = device_get_binding(SW6_GPIO_LABEL);
+	if (button7 == NULL) {
+		printk("Error: didn't find %s device\n", SW6_GPIO_LABEL);
+		return;
+	}
+
+	//Binding button to SW7
+	button8 = device_get_binding(SW7_GPIO_LABEL);
+	if (button8 == NULL) {
+		printk("Error: didn't find %s device\n", SW7_GPIO_LABEL);
+		return;
+	}
+
+	//Binding button to SW7
+	button9 = device_get_binding(SW8_GPIO_LABEL);
+	if (button9 == NULL) {
+		printk("Error: didn't find %s device\n", SW8_GPIO_LABEL);
+		return;
+	}
+
 	//gpio pin configure
 	ret = gpio_pin_configure(button, SW0_GPIO_PIN, SW0_GPIO_FLAGS);
 	if (ret != 0) {
@@ -260,6 +378,34 @@ void main(void)
 	if (ret != 0) {
 		printk("Error %d: failed to configure %s pin %d\n",
 		       ret, SW4_GPIO_LABEL, SW4_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_configure(button, SW5_GPIO_PIN, SW5_GPIO_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, SW5_GPIO_LABEL, SW5_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_configure(button, SW6_GPIO_PIN, SW6_GPIO_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, SW6_GPIO_LABEL, SW6_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_configure(button, SW7_GPIO_PIN, SW7_GPIO_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, SW7_GPIO_LABEL, SW7_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_configure(button, SW8_GPIO_PIN, SW8_GPIO_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, SW8_GPIO_LABEL, SW8_GPIO_PIN);
 		return;
 	}
 	//interrupt configure
@@ -307,6 +453,42 @@ void main(void)
 			ret, SW4_GPIO_LABEL, SW4_GPIO_PIN);
 		return;
 	}
+
+	ret = gpio_pin_interrupt_configure(button,
+					   SW5_GPIO_PIN,
+					   GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, SW5_GPIO_LABEL, SW5_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_interrupt_configure(button,
+					   SW6_GPIO_PIN,
+					   GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, SW6_GPIO_LABEL, SW6_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_interrupt_configure(button,
+					   SW7_GPIO_PIN,
+					   GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, SW7_GPIO_LABEL, SW7_GPIO_PIN);
+		return;
+	}
+
+	ret = gpio_pin_interrupt_configure(button,
+					   SW8_GPIO_PIN,
+					   GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, SW8_GPIO_LABEL, SW8_GPIO_PIN);
+		return;
+	}
 	//Set up button
 	gpio_init_callback(&button_cb_data, button_pressed, BIT(SW0_GPIO_PIN));
 	gpio_add_callback(button, &button_cb_data);
@@ -328,6 +510,24 @@ void main(void)
 	gpio_add_callback(button5, &button5_cb_data);
 	printk("Set up button at %s pin %d (If you change from release to press, the mailbox will be empty.)\n", SW4_GPIO_LABEL, SW4_GPIO_PIN);
 
+	gpio_init_callback(&button6_cb_data, button_pressed6, BIT(SW5_GPIO_PIN));
+	gpio_add_callback(button6, &button6_cb_data);
+	printk("Set up button at %s pin %d (Press to open blind)\n", SW5_GPIO_LABEL, SW5_GPIO_PIN);
+
+	gpio_init_callback(&button7_cb_data, button_pressed7, BIT(SW6_GPIO_PIN));
+	gpio_add_callback(button7, &button7_cb_data);
+	printk("Set up button at %s pin %d (Press to close blind)\n", SW6_GPIO_LABEL, SW6_GPIO_PIN);
+
+	gpio_init_callback(&button8_cb_data, button_pressed8, BIT(SW7_GPIO_PIN));
+	gpio_add_callback(button8, &button8_cb_data);
+	printk("Set up button at %s pin %d (Press if blind is opened)\n", SW7_GPIO_LABEL, SW7_GPIO_PIN);
+
+	gpio_init_callback(&button9_cb_data, button_pressed9, BIT(SW8_GPIO_PIN));
+	gpio_add_callback(button9, &button9_cb_data);
+	printk("Set up button at %s pin %d (Press if blind is closed)\n", SW8_GPIO_LABEL, SW8_GPIO_PIN);
+
+	
+
 
 	//Led initialize
 	led = initialize_led();
@@ -336,11 +536,17 @@ void main(void)
 
 	led3 = initialize_led3();
 
+	led4 = initialize_led4();
+
+	led5 = initialize_led5();
+
 	printk("Press the button\n");
 	while (1) {
 		match_led_to_button(button, led);
 		match_led_to_button2(button2, led2);
 		match_led_to_button3(button3, led3);
+		match_led_to_button678(button6, button7, button8, led4);
+		match_led_to_button679(button6, button7, button9, led5);
 		k_msleep(SLEEP_TIME_MS);
 	}
 }
@@ -568,6 +774,145 @@ static const struct device *initialize_led3(void)
 }
 
 static void match_led_to_button3(const struct device *button,
+				const struct device *led)
+{
+	return;
+}
+#endif	/* LED2_GPIO_LABEL */
+
+/*
+ * The led3 devicetree alias is optional. If present, we'll use it
+ * to turn on the LED whenever the button is pressed.
+ */
+
+#define LED3_NODE	DT_ALIAS(led3)
+
+#if DT_NODE_HAS_STATUS(LED3_NODE, okay) && DT_NODE_HAS_PROP(LED3_NODE, gpios)
+#define LED3_GPIO_LABEL	DT_GPIO_LABEL(LED3_NODE, gpios)
+#define LED3_GPIO_PIN	DT_GPIO_PIN(LED3_NODE, gpios)
+#define LED3_GPIO_FLAGS	(GPIO_OUTPUT | DT_GPIO_FLAGS(LED3_NODE, gpios))
+#endif
+
+#ifdef LED3_GPIO_LABEL
+static const struct device *initialize_led4(void)
+{
+	const struct device *led;
+	int ret;
+
+	led = device_get_binding(LED3_GPIO_LABEL);
+	if (led == NULL) {
+		printk("Didn't find LED device %s\n", LED3_GPIO_LABEL);
+		return NULL;
+	}
+
+	ret = gpio_pin_configure(led, LED3_GPIO_PIN, LED3_GPIO_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure LED device %s pin %d\n",
+		       ret, LED3_GPIO_LABEL, LED3_GPIO_PIN);
+		return NULL;
+	}
+
+	printk("Set up bathroom light controler at %s pin %d\n", LED3_GPIO_LABEL, LED3_GPIO_PIN);
+
+	return led;
+}
+
+static void match_led_to_button678(const struct device *button, const struct device *button1, const struct device *button2, 
+				const struct device *led)
+{
+	bool val, val1, val2;
+
+	val = gpio_pin_get(button, SW5_GPIO_PIN);
+	val1 = gpio_pin_get(button1, SW6_GPIO_PIN);
+	val2 = gpio_pin_get(button2, SW7_GPIO_PIN);
+	if(val && !val1 && !val2)
+	{
+		gpio_pin_set(led, LED3_GPIO_PIN, val);
+	}
+	else
+	{
+		gpio_pin_set(led, LED3_GPIO_PIN, 0);
+	}
+}
+
+#else  /* !defined(LED3_GPIO_LABEL) */
+static const struct device *initialize_led4(void)
+{
+	printk("No LED device was defined\n");
+	return NULL;
+}
+
+static void match_led_to_button678(const struct device *button,
+				const struct device *led)
+{
+	return;
+}
+#endif	/* LED2_GPIO_LABEL */
+
+/*
+ * The led4 devicetree alias is optional. If present, we'll use it
+ * to turn on the LED whenever the button is pressed.
+ */
+
+#define LED4_NODE	DT_ALIAS(led4)
+
+#if DT_NODE_HAS_STATUS(LED4_NODE, okay) && DT_NODE_HAS_PROP(LED4_NODE, gpios)
+#define LED4_GPIO_LABEL	DT_GPIO_LABEL(LED4_NODE, gpios)
+#define LED4_GPIO_PIN	DT_GPIO_PIN(LED4_NODE, gpios)
+#define LED4_GPIO_FLAGS	(GPIO_OUTPUT | DT_GPIO_FLAGS(LED4_NODE, gpios))
+#endif
+
+#ifdef LED4_GPIO_LABEL
+static const struct device *initialize_led5(void)
+{
+	const struct device *led;
+	int ret;
+
+	led = device_get_binding(LED4_GPIO_LABEL);
+	if (led == NULL) {
+		printk("Didn't find LED device %s\n", LED4_GPIO_LABEL);
+		return NULL;
+	}
+
+	ret = gpio_pin_configure(led, LED4_GPIO_PIN, LED4_GPIO_FLAGS);
+	if (ret != 0) {
+		printk("Error %d: failed to configure LED device %s pin %d\n",
+		       ret, LED4_GPIO_LABEL, LED4_GPIO_PIN);
+		return NULL;
+	}
+
+	printk("Set up bathroom light controler at %s pin %d\n", LED4_GPIO_LABEL, LED4_GPIO_PIN);
+
+	return led;
+}
+
+static void match_led_to_button679(const struct device *button, const struct device *button1, const struct device *button2, 
+				const struct device *led)
+{
+	bool val, val1, val2;
+
+	val = gpio_pin_get(button, SW5_GPIO_PIN);
+	val1 = gpio_pin_get(button1, SW6_GPIO_PIN);
+	val2 = gpio_pin_get(button2, SW8_GPIO_PIN);
+	if(!val && val1 && !val2)
+	{
+		gpio_pin_set(led, LED4_GPIO_PIN, 1);
+	}
+	else
+	{
+		gpio_pin_set(led, LED4_GPIO_PIN, 0);
+	}
+	
+}
+
+#else  /* !defined(LED4_GPIO_LABEL) */
+static const struct device *initialize_led5(void)
+{
+	printk("No LED device was defined\n");
+	return NULL;
+}
+
+static void match_led_to_button679(const struct device *button,
 				const struct device *led)
 {
 	return;

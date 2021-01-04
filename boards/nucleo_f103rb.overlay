@@ -11,6 +11,14 @@
 			gpios = <&gpioa 7 GPIO_ACTIVE_HIGH>;
 			label = "User LD3";
 		};
+		green_led_5: led_4 {
+			gpios = <&gpioa 8 GPIO_ACTIVE_HIGH>;
+			label = "User LD4";
+		};
+		green_led_6: led_5 {
+			gpios = <&gpioa 9 GPIO_ACTIVE_HIGH>;
+			label = "User LD5";
+		};
 	};
 
 	przyciski {
@@ -31,15 +39,37 @@
 			label = "User B4";
 			gpios = <&gpioc 9 GPIO_ACTIVE_HIGH>;
 		};
+		user_button7: button6 {
+			label = "User B5";
+			gpios = <&gpioc 8 GPIO_ACTIVE_HIGH>;
+		};
+		user_button8: button7 {
+			label = "User B6";
+			gpios = <&gpioc 7 GPIO_ACTIVE_HIGH>;
+		};
+		user_button9: button8 {
+			label = "User B7";
+			gpios = <&gpioc 6 GPIO_ACTIVE_HIGH>;
+		};
+		user_button10: button9 {
+			label = "User B8";
+			gpios = <&gpioc 5 GPIO_ACTIVE_HIGH>;
+		};
 	};
 
 	aliases {
 		led1 = &green_led_3;
 		led2 = &green_led_4;
+		led3 = &green_led_5;
+		led4 = &green_led_6;
 		sw1 = &user_button3;
 		sw2 = &user_button4;
 		sw3 = &user_button5;
 		sw4 = &user_button6;
+		sw5 = &user_button7;
+		sw6 = &user_button8;
+		sw7 = &user_button9;
+		sw8 = &user_button10;
 	};
 };
 
